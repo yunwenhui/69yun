@@ -1,29 +1,33 @@
-name: zip_flows # 工作流程的名称
+name: zip_flows
 
 on: 
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
   push: 
     paths: 
-      - '_worker.js' # 当 _worker.js 文件发生变动时触发
+      - '_worker.js'
 
 permissions:
   contents: write
 
+# 强制 Node 24 消除弃用警告
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   package-and-commit: 
-    runs-on: ubuntu-latest # 运行环境，这里使用最新版本的 Ubuntu
+    runs-on: ubuntu-latest
     steps: 
-    - name: Checkout Repository # 检出代码
-      uses: actions/checkout@v2 
+    - name: Checkout Repository
+      uses: actions/checkout@v6  # 已升级到最新版
 
-    - name: Zip the worker file # 将 _worker.js 文件打包成 worker.js.zip
-      run: zip _worker.js.zip _worker.js 
+    - name: Zip the worker file
+      run: zip _worker.js.zip _worker.js
 
-    - name: Commit and push the packaged file # 提交并推送打包后的文件
-      uses: EndBug/add-and-commit@v7 
+    - name: Commit and push the packaged file
+      uses: EndBug/add-and-commit@v9  # 升级到最新版，支持 Node 24
       with:
-        add: '_worker.js.zip' 
-        message: 'Automatically package and commit _worker.js.zip' 
-        author_name: github-actions[bot] 
-        author_email: actions[bot]@users.noreply.github.com 
-        token: ${{ secrets.GH_TOKEN }} 
+        add: '_worker.js.zip'
+        message: 'Automatically package and commit _worker.js.zip'
+        author_name: github-actions[bot]
+        author_email: actions[bot]@users.nore.github.com
+        token: ${{ secrets.GH_TOKEN }}
